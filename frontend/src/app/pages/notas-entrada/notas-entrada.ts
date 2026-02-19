@@ -51,30 +51,13 @@ export class NotasEntradaComponent implements OnInit, OnDestroy {
   ) { }
   
   ngOnInit() {
-    // Carrega dados após o ciclo de detecção de mudanças para evitar NG0100
-    Promise.resolve().then(() => {
-      this.loadNfes();
-      
-      // Segunda tentativa após 150ms (garante que funciona)
-      setTimeout(() => {
-        if (!this.loading && this.nfes.length === 0) {
-          this.loadNfes();
-        }
-      }, 150);
-    });
+    // Carrega dados na inicialização
+    this.loadNfes();
     
-    // Também escuta eventos de refresh para recarregar quando necessário
+    // Escuta eventos de refresh para recarregar quando necessário
     this.refreshSubscription = this.nfeRefreshService.refreshNotas$.subscribe(() => {
       this.currentPage = 1;
-      Promise.resolve().then(() => {
-        this.loadNfes();
-        // Dispara segunda vez após delay
-        setTimeout(() => {
-          if (!this.loading && this.nfes.length === 0) {
-            this.loadNfes();
-          }
-        }, 150);
-      });
+      this.loadNfes();
     });
   }
 
