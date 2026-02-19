@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               Int       @id @default(autoincrement())
+  username         String    @unique(map: "sqlite_autoindex_usuarios_1")
+  password         String    @map("SenhaHash")
+  salt             String?   @map("SenhaSalt")
+  role             String    @default("user") @map("Cargo")
+  tokenCreatedAt   DateTime? @map("TokenDataCriacao")
+  createdAt        DateTime
+  updatedAt        DateTime
+
+  @@map("usuarios")
+}
+
+model NFe {
+  id            Int      @id @default(autoincrement())
+  chaveNFe      String?  @unique
+  numero        String
+  serie         String
+  dataEmissao   DateTime
+  emitenteNome  String
+  emitenteCNPJ  String
+  destNome      String
+  destCNPJ      String
+  valorTotal    Float
+  userId        Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  items         NFeItem[]
+
+  @@map("nfes")
+}
+
+model NFeItem {
+  id            Int      @id @default(autoincrement())
+  nfeId         Int
+  codigo        String
+  descricao     String
+  ncm           String?
+  cfop          String?
+  quantidade    Float
+  valorUnitario Float
+  valorTotal    Float
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  nfe           NFe      @relation(fields: [nfeId], references: [id], onDelete: Cascade)
+
+  @@map("nfe_items")
+}

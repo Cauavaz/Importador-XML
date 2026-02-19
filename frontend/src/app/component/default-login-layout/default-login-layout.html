@@ -1,0 +1,43 @@
+<main class="login-container">
+    <section class="video-section">
+        <div>
+            <img src="img/X2.png" alt="Logo">
+        </div>
+    </section>
+    
+    <section class="form-section">
+        <div class="form-content">
+            <div class="logo-header">
+                <div class="logo-circle">
+                    <video autoplay muted playsinline loop class="background-video">
+                        <source src="img/video.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-title">IMPORTADOR</span>
+                    <span class="logo-subtitle">XML</span>
+                </div>
+            </div>
+            
+            <h2>Acesse sua Conta</h2>
+            
+            <ng-content></ng-content>
+            
+            <div class="btn-wrapper">
+                <button class="btn-primary" 
+                    (click)="submit()" 
+                    [disabled]="disablePrimaryBtn">
+                    {{primaryBtnText}}
+                </button>
+                <div class="dividir">
+                    <div></div>
+                    <span>ou</span>
+                    <div></div>
+                </div>
+                <button class="btn-secondary" (click)="navigate()">
+                    {{secondaryBtnText}}
+                </button>
+            </div>
+        </div>
+    </section>
+</main>

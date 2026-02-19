@@ -1,0 +1,84 @@
+<section class="notes-page">
+  <header class="notes-toolbar">
+    <div>
+      <p class="subtitle">Consulte e abra os detalhes das notas importadas.</p>
+    </div>
+
+    <div class="toolbar-actions">
+      <button class="ghost-btn" type="button" (click)="navigateToUpload()">Novo Upload</button>
+      <!-- <button class="primary-btn" type="button" (click)="loadNfes()" [disabled]="loading">
+        {{ loading ? 'Atualizando...' : 'Atualizar' }}
+      </button> -->
+    </div>
+  </header>
+
+  <article class="notes-card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Número</th>
+            <th>Série</th>
+            <th>Emitente</th>
+            <th>Emissão</th>
+            <th>Total</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngIf="loading" class="status-row">
+            <td colspan="6">Carregando notas...</td>
+          </tr>
+
+          <tr *ngIf="!loading && nfes.length === 0" class="status-row">
+            <td colspan="6">
+              Nenhuma nota encontrada. Faça upload de XML para começar.
+            </td>
+          </tr>
+
+          <tr *ngFor="let nfe of nfes; trackBy: trackByNfeId">
+            <td class="mono">{{ nfe.numero }}</td>
+            <td>{{ nfe.serie }}</td>
+            <td>
+              <div class="issuer-cell">
+                <strong>{{ nfe.emitenteNome }}</strong>
+                <small>{{ nfe.emitenteCNPJ }}</small>
+              </div>
+            </td>
+            <td>{{ formatDate(nfe.dataEmissao) }}</td>
+            <td class="amount">{{ formatCurrency(nfe.valorTotal) }}</td>
+            <td>
+              <div class="action-buttons">
+                <button class="details-btn" type="button" (click)="viewDetails(nfe.id)">
+                  Ver detalhes
+                </button>
+                <button class="delete-btn" type="button" (click)="deleteNfe(nfe)">
+                  Excluir
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <footer class="notes-footer" *ngIf="!loading && nfes.length > 0">
+      <span>
+        Exibindo {{ (currentPage - 1) * limit + 1 }} a {{ Math.min(currentPage * limit, total) }} de {{ total }}
+      </span>
+
+      <div class="pager">
+        <button type="button" (click)="previousPage()" [disabled]="currentPage === 1">Anterior</button>
+        <span>Página {{ currentPage }} de {{ totalPages }}</span>
+        <button type="button" (click)="nextPage()" [disabled]="currentPage === totalPages">Próxima</button>
+      </div>
+    </footer>
+  </article>
+</section>
+
+<app-nfe-details-modal
+  [nfeId]="selectedNfeId"
+  [isOpen]="isModalOpen"
+  (close)="closeModal()">
+</app-nfe-details-modal>

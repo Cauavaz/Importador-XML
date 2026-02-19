@@ -1,0 +1,43 @@
+<div class="layout-container">
+  <aside class="sidebar">
+    <div class="brand-block">
+      <div class="brand-mark">NF</div>
+      <div class="brand-copy">
+        <strong>Importador XML</strong>
+        <span>Painel Fiscal</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a
+        *ngFor="let item of navItems"
+        [routerLink]="item.route"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        (click)="onNavItemClick(item.route)"
+        class="nav-item"
+      >
+        <span class="nav-icon">{{ item.icon }}</span>
+        <span class="nav-label">{{ item.label }}</span>
+      </a>
+    </nav>
+
+    <button class="logout-btn" type="button" (click)="logout()">
+      Sair
+    </button>
+  </aside>
+
+  <main class="main-content">
+    <header class="content-header">
+      <div>
+        <p class="content-eyebrow">Módulo</p>
+        <h1>{{ pageTitle }}</h1>
+      </div>
+      <div class="user-pill">{{ username }}</div>
+    </header>
+
+    <section class="content-area">
+      <router-outlet></router-outlet>
+    </section>
+  </main>
+</div>

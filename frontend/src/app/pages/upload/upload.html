@@ -1,0 +1,79 @@
+<div class="upload-container">
+  <div class="upload-card">
+    <div class="upload-header">
+      <h2>Upload de XML</h2>
+      <p>Selecione um ou mais arquivos XML de NF-e para importar</p>
+    </div>
+    
+    <div class="upload-area" 
+         [class.uploading]="uploading"
+         (dragover)="onDragOver($event)" 
+         (dragleave)="onDragLeave($event)"
+         (drop)="onDrop($event)">
+      <div class="upload-content" *ngIf="!uploading">
+        <div class="upload-icon">📁</div>
+        <h3>Arraste e solte os arquivos XML aqui</h3>
+        <p>ou</p>
+        <button class="select-btn" (click)="selectFiles()" [disabled]="uploading">
+          Selecionar Arquivos
+        </button>
+        <input type="file" 
+               #fileInput 
+               multiple 
+               accept=".xml" 
+               (change)="onFileSelected($event)"
+               style="display: none;">
+      </div>
+      
+      <div class="upload-content" *ngIf="uploading">
+        <div class="upload-icon">⏳</div>
+        <h3>Importando arquivos...</h3>
+        <p>Aguarde enquanto processamos os XMLs</p>
+      </div>
+    </div>
+    
+    <!-- Resultados do Upload -->
+    <div class="upload-results" *ngIf="uploadedFiles.length > 0">
+      <div class="results-header">
+        <h3>Resultados da Importação</h3>
+        <button class="clear-btn" (click)="clearResults()">Limpar</button>
+      </div>
+      
+      <div class="results-list">
+        <div *ngFor="let file of uploadedFiles" 
+             class="result-item"
+             [class.success]="file.status === 'success'"
+             [class.warning]="file.status === 'warning'"
+             [class.error]="file.status === 'error'">
+          <div class="result-icon">
+            {{ file.status === 'success' ? '✅' : file.status === 'warning' ? '⚠️' : '❌' }}
+          </div>
+          <div class="result-info">
+            <div class="row-top">
+              <strong>{{ file.name }}</strong>
+              <span class="status-chip" [class.warning]="file.status === 'warning'">
+                {{ file.status === 'success' ? 'Importada' : file.status === 'warning' ? 'Duplicada' : 'Erro' }}
+              </span>
+            </div>
+            <p>{{ file.message }}</p>
+            <div class="meta-line" *ngIf="file.numero">
+              <span>NF-e: {{ file.numero }}</span>
+              <span>Valor: R$ {{ file.valor | number:'1.2-2' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="results-actions">
+        <button class="view-notas-btn" (click)="navigateToNotas()">
+          Ver Notas Importadas
+        </button>
+      </div>
+    </div>
+    
+    <div class="upload-info">
+      <p><strong>Formatos aceitos:</strong> .xml</p>
+      <p><strong>Tamanho máximo:</strong> 10MB por arquivo</p>
+    </div>
+  </div>
+</div>

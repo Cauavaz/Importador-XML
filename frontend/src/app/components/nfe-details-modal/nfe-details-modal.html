@@ -1,0 +1,125 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="closeModal()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Detalhes da NF-e</h2>
+      <button class="close-btn" (click)="closeModal()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div *ngIf="loading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Carregando detalhes...</p>
+      </div>
+
+      <div *ngIf="errorMessage && !loading" class="error-state">
+        <p>{{ errorMessage }}</p>
+      </div>
+
+      <div *ngIf="nfe && !loading" class="nfe-content">
+        <div class="info-grid">
+          <div class="info-card">
+            <h3>Informações da Nota</h3>
+            <div class="info-row">
+              <span class="label">Número:</span>
+              <span class="value">{{ nfe.numero }} / {{ nfe.serie }}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Data Emissão:</span>
+              <span class="value">{{ formatDate(nfe.dataEmissao) }}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Chave NF-e:</span>
+              <span class="value chave">{{ nfe.chaveNFe || 'N/A' }}</span>
+            </div>
+            <div class="info-row total">
+              <span class="label">Valor Total:</span>
+              <span class="value">{{ formatCurrency(nfe.valorTotal) }}</span>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <h3>Emitente</h3>
+            <div class="info-row">
+              <span class="label">Nome:</span>
+              <span class="value">{{ nfe.emitenteNome }}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">CNPJ:</span>
+              <span class="value">{{ nfe.emitenteCNPJ }}</span>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <h3>Destinatário</h3>
+            <div class="info-row">
+              <span class="label">Nome:</span>
+              <span class="value">{{ nfe.destNome }}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">CNPJ:</span>
+              <span class="value">{{ nfe.destCNPJ }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="items-section">
+          <div class="items-header">
+            <h3>Itens da Nota ({{ nfe.items.length }})</h3>
+            <span class="items-info" *ngIf="nfe.items.length > itemsPerPage">
+              Exibindo {{ (currentPage - 1) * itemsPerPage + 1 }} a {{ Math.min(currentPage * itemsPerPage, nfe.items.length) }} de {{ nfe.items.length }}
+            </span>
+          </div>
+          
+          <div class="items-table-wrapper">
+            <table class="items-table">
+              <thead>
+                <tr>
+                  <th>Código</th>
+                  <th>Descrição</th>
+                  <th>NCM</th>
+                  <th>CFOP</th>
+                  <th class="text-right">Qtd</th>
+                  <th class="text-right">Vlr. Unit.</th>
+                  <th class="text-right">Vlr. Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of paginatedItems; trackBy: trackByItemId">
+                  <td>{{ item.codigo }}</td>
+                  <td class="descricao">{{ item.descricao }}</td>
+                  <td>{{ item.ncm || '-' }}</td>
+                  <td>{{ item.cfop || '-' }}</td>
+                  <td class="text-right">{{ item.quantidade }}</td>
+                  <td class="text-right">{{ formatCurrency(item.valorUnitario) }}</td>
+                  <td class="text-right">{{ formatCurrency(item.valorTotal) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="items-pagination" *ngIf="nfe.items.length > itemsPerPage">
+            <button 
+              type="button" 
+              class="pagination-btn" 
+              (click)="previousPage()" 
+              [disabled]="currentPage === 1">
+              Anterior
+            </button>
+            <span class="pagination-info">Página {{ currentPage }} de {{ totalPages }}</span>
+            <button 
+              type="button" 
+              class="pagination-btn" 
+              (click)="nextPage()" 
+              [disabled]="currentPage === totalPages">
+              Próxima
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

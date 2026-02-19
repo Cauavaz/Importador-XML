@@ -1,0 +1,77 @@
+<section class="detail-page" *ngIf="!loading && nfe">
+  <header class="detail-toolbar">
+    <div>
+      <p class="eyebrow">Detalhe da Nota</p>
+      <h2>NF {{ nfe.numero }} · Série {{ nfe.serie }}</h2>
+      <p class="meta">Usuário: {{ getUsername() }}</p>
+    </div>
+    <button class="back-btn" type="button" (click)="goBack()">Voltar</button>
+  </header>
+
+  <article class="summary-card">
+    <div class="summary-grid">
+      <div class="summary-block">
+        <span class="label">Emitente</span>
+        <strong>{{ nfe.emitenteNome }}</strong>
+        <small>{{ nfe.emitenteCNPJ }}</small>
+      </div>
+      <div class="summary-block">
+        <span class="label">Destinatário</span>
+        <strong>{{ nfe.destNome }}</strong>
+        <small>{{ nfe.destCNPJ }}</small>
+      </div>
+      <div class="summary-block">
+        <span class="label">Emissão</span>
+        <strong>{{ formatDate(nfe.dataEmissao) }}</strong>
+        <small>Chave: {{ nfe.chaveNFe || 'N/A' }}</small>
+      </div>
+      <div class="summary-block total">
+        <span class="label">Valor Total</span>
+        <strong>{{ nfe.valorTotalFormatado }}</strong>
+      </div>
+    </div>
+  </article>
+
+  <article class="items-card">
+    <header>
+      <h3>Itens da Nota</h3>
+      <span>{{ nfe.items.length }} item(ns)</span>
+    </header>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Descrição</th>
+            <th>NCM</th>
+            <th>CFOP</th>
+            <th>Qtd</th>
+            <th>Vlr Unit.</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of nfe.items; trackBy: trackByItemId">
+            <td class="mono">{{ item.codigo }}</td>
+            <td>{{ item.descricao }}</td>
+            <td>{{ item.ncm || '-' }}</td>
+            <td>{{ item.cfop || '-' }}</td>
+            <td class="num">{{ item.quantidade }}</td>
+            <td class="num">{{ item.valorUnitarioFormatado }}</td>
+            <td class="num total">{{ item.valorTotalFormatado }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+</section>
+
+<section class="state-box" *ngIf="loading">
+  <h3>Carregando detalhes...</h3>
+</section>
+
+<section class="state-box" *ngIf="!loading && !nfe && errorMessage">
+  <h3>{{ errorMessage }}</h3>
+  <button class="back-btn" type="button" (click)="goBack()">Voltar para Notas</button>
+</section>
