@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NfeService } from '../../services/nfe.service';
@@ -48,6 +48,7 @@ export class NotasEntradaComponent implements OnInit, OnDestroy {
     private nfeService: NfeService,
     private toastr: ToastrService,
     private nfeRefreshService: NfeRefreshService,
+    private cdr: ChangeDetectorRef,
   ) { }
   
   ngOnInit() {
@@ -71,21 +72,37 @@ export class NotasEntradaComponent implements OnInit, OnDestroy {
     }
 
     this.loading = true;
+    
+    // Forçar detecção de mudanças imediatamente
+    this.cdr.detectChanges();
+    
     this.nfeService
       .listNfes(this.currentPage, this.limit)
-      .pipe(finalize(() => (this.loading = false)))
+      .pipe(finalize(() => {
+        this.loading = false;
+        // Forçar detecção após finalizar
+        this.cdr.detectChanges();
+      }))
       .subscribe({
         next: (response) => {
-          this.nfes = (response?.data || []) as NfeListItem[];
+          // Criar nova referência para garantir detecção
+          this.nfes = [...(response?.data || [])] as NfeListItem[];
           this.total = Number(response?.total || 0);
           this.totalPages = Number(response?.totalPages || 1);
           this.currentPage = Number(response?.page || 1);
+          
+          // Forçar detecção após atualizar os dados
+          this.cdr.detectChanges();
         },
         error: () => {
           this.toastr.error('Não foi possível carregar as notas.');
+          // Criar nova referência para garantir detecção
           this.nfes = [];
           this.total = 0;
           this.totalPages = 1;
+          
+          // Forçar detecção após erro
+          this.cdr.detectChanges();
         }
       });
   }
@@ -97,21 +114,25 @@ export class NotasEntradaComponent implements OnInit, OnDestroy {
   viewDetails(nfeId: number) {
     this.selectedNfeId = nfeId;
     this.isModalOpen = true;
+    this.cdr.detectChanges(); // Forçar detecção imediata
   }
 
   closeModal() {
     this.isModalOpen = false;
     this.selectedNfeId = null;
+    this.cdr.detectChanges(); // Forçar detecção imediata
   }
 
   openDeleteModal(nfe: NfeListItem) {
     this.nfeToDelete = nfe;
     this.isDeleteModalOpen = true;
+    this.cdr.detectChanges(); // Forçar detecção imediata
   }
 
   closeDeleteModal() {
     this.isDeleteModalOpen = false;
     this.nfeToDelete = null;
+    this.cdr.detectChanges(); // Forçar detecção imediata
   }
 
   confirmDelete() {
@@ -120,27 +141,29 @@ export class NotasEntradaComponent implements OnInit, OnDestroy {
     }
 
     const nfeId = this.nfeToDelete.id;
+    this.closeDeleteModal();
+    
+    // Forçar detecção após fechar modal
+    this.cdr.detectChanges();
     
     this.nfeService.deleteNfe(nfeId).subscribe({
       next: (response) => {
         this.toastr.success(response.message || 'NF-e excluída com sucesso');
         
-        // Remove da lista imediatamente (feedback visual instantâneo)
-        this.nfes = this.nfes.filter(n => n.id !== nfeId);
+        // Criar nova referência para garantir detecção
+        this.nfes = [...this.nfes.filter(n => n.id !== nfeId)];
         this.total = Math.max(0, this.total - 1);
         
-        // Fecha o modal
-        this.closeDeleteModal();
-        
+        // Forçar detecção imediata após remover
+        this.cdr.detectChanges();
+
         // Recarrega do servidor para garantir sincronização
-        setTimeout(() => {
-          this.loading = false; // Garante que não está bloqueado
-          this.loadNfes();
-        }, 100);
+        this.loadNfes();
       },
       error: (error) => {
         this.toastr.error(error?.error?.message || 'Erro ao excluir NF-e');
-        this.closeDeleteModal();
+        // Forçar detecção após erro
+        this.cdr.detectChanges();
       }
     });
   }
@@ -148,6 +171,7 @@ export class NotasEntradaComponent implements OnInit, OnDestroy {
   previousPage() {
     if (this.currentPage > 1) {
       this.currentPage--;
+      this.cdr.detectChanges(); // Forçar detecção antes de carregar
       this.loadNfes();
     }
   }
@@ -155,6 +179,7 @@ export class NotasEntradaComponent implements OnInit, OnDestroy {
   nextPage() {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
+      this.cdr.detectChanges(); // Forçar detecção antes de carregar
       this.loadNfes();
     }
   }
