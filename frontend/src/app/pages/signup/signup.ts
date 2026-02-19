@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
-import { DefaultLoginLayout } from '../../component/default-login-layout/default-login-layout';
+import { DefaultLoginLayout } from '../../components/default-login-layout/default-login-layout';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { email } from '@angular/forms/signals';
-import { PrimaryInput } from '../../component/primary-input/primary-input';
+import { PrimaryInput } from '../../components/primary-input/primary-input';
 import { Router } from '@angular/router';
 import { RegisterService } from '../../services/register';
 import { ToastrService } from 'ngx-toastr';
 import { LoginComponent } from '../login/login';
 
-interface SingnupForm {
+interface SignupForm {
   name: FormControl;
   email: FormControl;
   password: FormControl;
@@ -16,24 +16,24 @@ interface SingnupForm {
 }
 
 @Component({
-  selector: 'app-singnup',
+  selector: 'app-signup',
   imports: [ DefaultLoginLayout, PrimaryInput, ReactiveFormsModule],
 
   providers: [
     RegisterService
   ],
-  templateUrl: './singnup.html',
-  styleUrls: ['./singnup.scss'],
+  templateUrl: './signup.html',
+  styleUrls: ['./signup.scss'],
 })
-export class SingnupComponent {
-  singupForm!:FormGroup<SingnupForm>;
+export class SignupComponent {
+  signupForm!:FormGroup<SignupForm>;
   
   constructor ( 
     private router: Router,
     private registerService: RegisterService,
     private toastService: ToastrService
   ){ 
-    this.singupForm = new FormGroup({
+    this.signupForm = new FormGroup({
       name:new FormControl('', [Validators.required, Validators.minLength(3)]),
       email:new FormControl('', [Validators.required, Validators.email]),
       password:new FormControl('', [Validators.required, Validators.minLength(6)]),
@@ -43,14 +43,14 @@ export class SingnupComponent {
   }
 
   submit() {
-    if (this.singupForm.value.password !== this.singupForm.value.passwordConfirm) {
+    if (this.signupForm.value.password !== this.signupForm.value.passwordConfirm) {
       this.toastService.error('As senhas não coincidem');
       return;
     }
     
     this.registerService.register(
-      this.singupForm.value.email, 
-      this.singupForm.value.password, 
+      this.signupForm.value.email, 
+      this.signupForm.value.password, 
       'user'
     ).subscribe({
       next : () => {

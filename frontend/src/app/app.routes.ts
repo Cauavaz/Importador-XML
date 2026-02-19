@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './pages/login/login';
-import { SingnupComponent } from './pages/singnup/singnup';
+import { SignupComponent } from './pages/signup/signup';
 import { MainLayoutComponent } from './layout/main-layout/main-layout';
 import { UploadComponent } from './pages/upload/upload';
 import { NotasEntradaComponent } from './pages/notas-entrada/notas-entrada';
@@ -19,7 +19,7 @@ export const routes: Routes = [
     },
     {
         path: 'signup',
-        component: SingnupComponent
+        component: SignupComponent
     },
     {
         path: 'dashboard',
