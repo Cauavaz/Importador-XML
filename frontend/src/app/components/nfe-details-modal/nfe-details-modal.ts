@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NfeService } from '../../services/nfe.service';
 import { ToastrService } from 'ngx-toastr';
@@ -51,7 +51,8 @@ export class NfeDetailsModalComponent implements OnInit, OnChanges {
 
   constructor(
     private nfeService: NfeService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -67,6 +68,7 @@ export class NfeDetailsModalComponent implements OnInit, OnChanges {
       if (this.isOpen && this.nfeId) {
         this.nfe = null; // Reset data
         this.currentPage = 1; // Reset pagination
+        this.cdr.detectChanges(); // Forçar detecção
         this.loadDetails();
       }
     }
@@ -74,6 +76,7 @@ export class NfeDetailsModalComponent implements OnInit, OnChanges {
     else if (changes['nfeId'] && this.nfeId && this.isOpen) {
       this.nfe = null; // Reset data
       this.currentPage = 1; // Reset pagination
+      this.cdr.detectChanges(); // Forçar detecção
       this.loadDetails();
     }
   }
@@ -85,17 +88,30 @@ export class NfeDetailsModalComponent implements OnInit, OnChanges {
     this.errorMessage = '';
     this.nfe = null;
     
+    // Forçar detecção antes de carregar
+    this.cdr.detectChanges();
+    
     this.nfeService
       .getNfeDetails(this.nfeId)
-      .pipe(finalize(() => (this.loading = false)))
+      .pipe(finalize(() => {
+        this.loading = false;
+        // Forçar detecção após finalizar
+        this.cdr.detectChanges();
+      }))
       .subscribe({
         next: (response) => {
           this.nfe = response as NfeDetail;
           this.currentPage = 1;
+          
+          // Forçar detecção após receber dados
+          this.cdr.detectChanges();
         },
         error: (error) => {
           this.errorMessage = error?.error?.message || 'Erro ao carregar detalhes';
           this.toastr.error(this.errorMessage);
+          
+          // Forçar detecção após erro
+          this.cdr.detectChanges();
         }
       });
   }
@@ -105,6 +121,9 @@ export class NfeDetailsModalComponent implements OnInit, OnChanges {
     this.nfe = null;
     this.errorMessage = '';
     this.currentPage = 1;
+    
+    // Forçar detecção ao fechar modal
+    this.cdr.detectChanges();
   }
 
   get paginatedItems(): NfeDetailItem[] {
@@ -122,12 +141,18 @@ export class NfeDetailsModalComponent implements OnInit, OnChanges {
   previousPage() {
     if (this.currentPage > 1) {
       this.currentPage--;
+      
+      // Forçar detecção ao mudar página
+      this.cdr.detectChanges();
     }
   }
 
   nextPage() {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
+      
+      // Forçar detecção ao mudar página
+      this.cdr.detectChanges();
     }
   }
 
