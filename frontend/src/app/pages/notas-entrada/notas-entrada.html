@@ -53,7 +53,7 @@
                 <button class="details-btn" type="button" (click)="viewDetails(nfe.id)">
                   Ver detalhes
                 </button>
-                <button class="delete-btn" type="button" (click)="deleteNfe(nfe)">
+                <button class="delete-btn" type="button" (click)="openDeleteModal(nfe)">
                   Excluir
                 </button>
               </div>
@@ -82,3 +82,11 @@
   [isOpen]="isModalOpen"
   (close)="closeModal()">
 </app-nfe-details-modal>
+
+<app-delete-confirmation-modal
+  [isOpen]="isDeleteModalOpen"
+  [nfeNumero]="nfeToDelete?.numero || ''"
+  [nfeSerie]="nfeToDelete?.serie || ''"
+  (confirm)="confirmDelete()"
+  (cancel)="closeDeleteModal()">
+</app-delete-confirmation-modal>

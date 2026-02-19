@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Subscription, finalize } from 'rxjs';
 import { NfeRefreshService } from '../../services/nfe-refresh.service';
 import { NfeDetailsModalComponent } from '../../components/nfe-details-modal/nfe-details-modal';
+import { DeleteConfirmationModalComponent } from '../../components/delete-confirmation-modal/delete-confirmation-modal';
 
 interface NfeListItem {
   id: number;
@@ -20,7 +21,7 @@ interface NfeListItem {
 @Component({
   selector: 'app-notas-entrada',
   standalone: true,
-  imports: [CommonModule, NfeDetailsModalComponent],
+  imports: [CommonModule, NfeDetailsModalComponent, DeleteConfirmationModalComponent],
   templateUrl: './notas-entrada.html',
   styleUrls: ['./notas-entrada.scss']
 })
@@ -36,6 +37,10 @@ export class NotasEntradaComponent implements OnInit, OnDestroy {
   
   selectedNfeId: number | null = null;
   isModalOpen = false;
+  
+  // Modal de confirmação de exclusão
+  isDeleteModalOpen = false;
+  nfeToDelete: NfeListItem | null = null;
   
   constructor(
     private router: Router,
@@ -116,18 +121,33 @@ export class NotasEntradaComponent implements OnInit, OnDestroy {
     this.selectedNfeId = null;
   }
 
-  deleteNfe(nfe: NfeListItem) {
-    if (!confirm(`Tem certeza que deseja excluir a NF-e ${nfe.numero}/${nfe.serie}?`)) {
+  openDeleteModal(nfe: NfeListItem) {
+    this.nfeToDelete = nfe;
+    this.isDeleteModalOpen = true;
+  }
+
+  closeDeleteModal() {
+    this.isDeleteModalOpen = false;
+    this.nfeToDelete = null;
+  }
+
+  confirmDelete() {
+    if (!this.nfeToDelete) {
       return;
     }
 
-    this.nfeService.deleteNfe(nfe.id).subscribe({
+    const nfeId = this.nfeToDelete.id;
+    
+    this.nfeService.deleteNfe(nfeId).subscribe({
       next: (response) => {
         this.toastr.success(response.message || 'NF-e excluída com sucesso');
         
         // Remove da lista imediatamente (feedback visual instantâneo)
-        this.nfes = this.nfes.filter(n => n.id !== nfe.id);
+        this.nfes = this.nfes.filter(n => n.id !== nfeId);
         this.total = Math.max(0, this.total - 1);
+        
+        // Fecha o modal
+        this.closeDeleteModal();
         
         // Recarrega do servidor para garantir sincronização
         setTimeout(() => {
@@ -137,6 +157,7 @@ export class NotasEntradaComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         this.toastr.error(error?.error?.message || 'Erro ao excluir NF-e');
+        this.closeDeleteModal();
       }
     });
   }
