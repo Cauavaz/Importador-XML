@@ -37,8 +37,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # Test files
-test-*.js
-temp_*.xml
+**/temp_*.xml
 
 # Prisma
 prisma/migrations/

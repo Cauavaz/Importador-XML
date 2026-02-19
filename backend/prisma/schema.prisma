@@ -22,7 +22,7 @@ model User {
 
 model NFe {
   id            Int      @id @default(autoincrement())
-  chaveNFe      String?  @unique
+  chaveNFe      String?
   numero        String
   serie         String
   dataEmissao   DateTime
@@ -37,6 +37,7 @@ model NFe {
   
   items         NFeItem[]
 
+  @@unique([chaveNFe, userId])
   @@map("nfes")
 }
 
