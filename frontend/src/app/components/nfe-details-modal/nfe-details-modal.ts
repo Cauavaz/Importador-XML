@@ -56,27 +56,24 @@ export class NfeDetailsModalComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit() {
-    // Initial load if modal is already open
     if (this.nfeId && this.isOpen) {
       this.loadDetails();
     }
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    // Trigger load when modal opens (isOpen changes to true)
     if (changes['isOpen']) {
       if (this.isOpen && this.nfeId) {
-        this.nfe = null; // Reset data
-        this.currentPage = 1; // Reset pagination
-        this.cdr.detectChanges(); // Forçar detecção
+        this.nfe = null;
+        this.currentPage = 1;
+        this.cdr.detectChanges();
         this.loadDetails();
       }
     }
-    // Trigger load when nfeId changes while modal is open
     else if (changes['nfeId'] && this.nfeId && this.isOpen) {
-      this.nfe = null; // Reset data
-      this.currentPage = 1; // Reset pagination
-      this.cdr.detectChanges(); // Forçar detecção
+      this.nfe = null;
+      this.currentPage = 1;
+      this.cdr.detectChanges();
       this.loadDetails();
     }
   }
@@ -87,30 +84,23 @@ export class NfeDetailsModalComponent implements OnInit, OnChanges {
     this.loading = true;
     this.errorMessage = '';
     this.nfe = null;
-    
-    // Forçar detecção antes de carregar
     this.cdr.detectChanges();
     
     this.nfeService
       .getNfeDetails(this.nfeId)
       .pipe(finalize(() => {
         this.loading = false;
-        // Forçar detecção após finalizar
         this.cdr.detectChanges();
       }))
       .subscribe({
         next: (response) => {
           this.nfe = response as NfeDetail;
           this.currentPage = 1;
-          
-          // Forçar detecção após receber dados
           this.cdr.detectChanges();
         },
         error: (error) => {
           this.errorMessage = error?.error?.message || 'Erro ao carregar detalhes';
           this.toastr.error(this.errorMessage);
-          
-          // Forçar detecção após erro
           this.cdr.detectChanges();
         }
       });
@@ -121,8 +111,6 @@ export class NfeDetailsModalComponent implements OnInit, OnChanges {
     this.nfe = null;
     this.errorMessage = '';
     this.currentPage = 1;
-    
-    // Forçar detecção ao fechar modal
     this.cdr.detectChanges();
   }
 
@@ -141,8 +129,6 @@ export class NfeDetailsModalComponent implements OnInit, OnChanges {
   previousPage() {
     if (this.currentPage > 1) {
       this.currentPage--;
-      
-      // Forçar detecção ao mudar página
       this.cdr.detectChanges();
     }
   }
@@ -150,8 +136,6 @@ export class NfeDetailsModalComponent implements OnInit, OnChanges {
   nextPage() {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
-      
-      // Forçar detecção ao mudar página
       this.cdr.detectChanges();
     }
   }

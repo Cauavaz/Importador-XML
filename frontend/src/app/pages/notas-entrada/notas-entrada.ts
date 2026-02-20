@@ -38,7 +38,6 @@ export class NotasEntradaComponent implements OnInit, OnDestroy {
   selectedNfeId: number | null = null;
   isModalOpen = false;
   
-  // Modal de confirmação de exclusão
   isDeleteModalOpen = false;
   nfeToDelete: NfeListItem | null = null;
   
@@ -52,10 +51,8 @@ export class NotasEntradaComponent implements OnInit, OnDestroy {
   ) { }
   
   ngOnInit() {
-    // Carrega dados na inicialização
     this.loadNfes();
     
-    // Escuta eventos de refresh para recarregar quando necessário
     this.refreshSubscription = this.nfeRefreshService.refreshNotas$.subscribe(() => {
       this.currentPage = 1;
       this.loadNfes();
@@ -72,36 +69,27 @@ export class NotasEntradaComponent implements OnInit, OnDestroy {
     }
 
     this.loading = true;
-    
-    // Forçar detecção de mudanças imediatamente
     this.cdr.detectChanges();
     
     this.nfeService
       .listNfes(this.currentPage, this.limit)
       .pipe(finalize(() => {
         this.loading = false;
-        // Forçar detecção após finalizar
         this.cdr.detectChanges();
       }))
       .subscribe({
         next: (response) => {
-          // Criar nova referência para garantir detecção
           this.nfes = [...(response?.data || [])] as NfeListItem[];
           this.total = Number(response?.total || 0);
           this.totalPages = Number(response?.totalPages || 1);
           this.currentPage = Number(response?.page || 1);
-          
-          // Forçar detecção após atualizar os dados
           this.cdr.detectChanges();
         },
         error: () => {
           this.toastr.error('Não foi possível carregar as notas.');
-          // Criar nova referência para garantir detecção
           this.nfes = [];
           this.total = 0;
           this.totalPages = 1;
-          
-          // Forçar detecção após erro
           this.cdr.detectChanges();
         }
       });
@@ -114,25 +102,25 @@ export class NotasEntradaComponent implements OnInit, OnDestroy {
   viewDetails(nfeId: number) {
     this.selectedNfeId = nfeId;
     this.isModalOpen = true;
-    this.cdr.detectChanges(); // Forçar detecção imediata
+    this.cdr.detectChanges();
   }
 
   closeModal() {
     this.isModalOpen = false;
     this.selectedNfeId = null;
-    this.cdr.detectChanges(); // Forçar detecção imediata
+    this.cdr.detectChanges();
   }
 
   openDeleteModal(nfe: NfeListItem) {
     this.nfeToDelete = nfe;
     this.isDeleteModalOpen = true;
-    this.cdr.detectChanges(); // Forçar detecção imediata
+    this.cdr.detectChanges();
   }
 
   closeDeleteModal() {
     this.isDeleteModalOpen = false;
     this.nfeToDelete = null;
-    this.cdr.detectChanges(); // Forçar detecção imediata
+    this.cdr.detectChanges();
   }
 
   confirmDelete() {
@@ -142,27 +130,19 @@ export class NotasEntradaComponent implements OnInit, OnDestroy {
 
     const nfeId = this.nfeToDelete.id;
     this.closeDeleteModal();
-    
-    // Forçar detecção após fechar modal
     this.cdr.detectChanges();
     
     this.nfeService.deleteNfe(nfeId).subscribe({
       next: (response) => {
         this.toastr.success(response.message || 'NF-e excluída com sucesso');
         
-        // Criar nova referência para garantir detecção
         this.nfes = [...this.nfes.filter(n => n.id !== nfeId)];
         this.total = Math.max(0, this.total - 1);
-        
-        // Forçar detecção imediata após remover
         this.cdr.detectChanges();
-
-        // Recarrega do servidor para garantir sincronização
         this.loadNfes();
       },
       error: (error) => {
         this.toastr.error(error?.error?.message || 'Erro ao excluir NF-e');
-        // Forçar detecção após erro
         this.cdr.detectChanges();
       }
     });
@@ -171,7 +151,7 @@ export class NotasEntradaComponent implements OnInit, OnDestroy {
   previousPage() {
     if (this.currentPage > 1) {
       this.currentPage--;
-      this.cdr.detectChanges(); // Forçar detecção antes de carregar
+      this.cdr.detectChanges();
       this.loadNfes();
     }
   }
@@ -179,7 +159,7 @@ export class NotasEntradaComponent implements OnInit, OnDestroy {
   nextPage() {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
-      this.cdr.detectChanges(); // Forçar detecção antes de carregar
+      this.cdr.detectChanges();
       this.loadNfes();
     }
   }

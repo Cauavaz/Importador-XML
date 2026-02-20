@@ -63,9 +63,7 @@ export class UploadComponent {
   
   private async handleFiles(files: FileList) {
     this.uploading = true;
-    this.uploadedFiles = []; // Limpar resultados anteriores
-    
-    // Forçar detecção imediata
+    this.uploadedFiles = [];
     this.cdr.detectChanges();
     
     const filesArray = Array.from(files).filter(file => file.name.toLowerCase().endsWith('.xml'));
@@ -77,14 +75,12 @@ export class UploadComponent {
       return;
     }
     
-    // Processar em sequência para evitar concorrência de escrita no SQLite
     for (const file of filesArray) {
       try {
         const result = await firstValueFrom(this.nfeService.uploadXml(file));
 
         const isDuplicated = Boolean(result?.duplicated);
         
-        // Criar nova referência para garantir detecção
         this.uploadedFiles = [...this.uploadedFiles, {
           name: file.name,
           status: isDuplicated ? 'warning' : 'success',
@@ -93,7 +89,6 @@ export class UploadComponent {
           valor: result.valorTotal
         }];
         
-        // Forçar detecção após adicionar arquivo
         this.cdr.detectChanges();
 
         if (isDuplicated) {
@@ -102,14 +97,12 @@ export class UploadComponent {
           this.toastr.success(`NF-e ${result.numero} importada!`, '', { timeOut: 2000 });
         }
       } catch (error: any) {
-        // Criar nova referência para garantir detecção
         this.uploadedFiles = [...this.uploadedFiles, {
           name: file.name,
           status: 'error',
           message: error.error?.message || 'Erro ao importar arquivo'
         }];
         
-        // Forçar detecção após erro
         this.cdr.detectChanges();
         
         this.toastr.error(`Erro: ${file.name}`, '', { timeOut: 2000 });
@@ -117,14 +110,9 @@ export class UploadComponent {
     }
     
     this.uploading = false;
-    
-    // Forçar detecção após finalizar
     this.cdr.detectChanges();
-    
-    // Atualizar lista automaticamente após importação
     this.nfeRefreshService.requestNotasRefresh();
     
-    // Limpar input
     if (this.fileInput) {
       this.fileInput.nativeElement.value = '';
     }

@@ -16,16 +16,13 @@ export class DefaultLoginLayout implements AfterViewInit {
   @Input() disablePrimaryBtn: boolean = true; 
 
   ngAfterViewInit() {
-    // Força o play do vídeo após a view carregar
     setTimeout(() => {
       const videos = document.querySelectorAll('video');
       videos.forEach(video => {
-        // Garante que está 100% sem som
         video.muted = true;
         video.volume = 0;
         video.loop = true;
         
-        // Remove todas as faixas de áudio se existirem
         const videoAny = video as any;
         if (videoAny.audioTracks) {
           for (let i = 0; i < videoAny.audioTracks.length; i++) {
@@ -33,12 +30,10 @@ export class DefaultLoginLayout implements AfterViewInit {
           }
         }
         
-        // Tenta tocar
         video.play().catch(err => {
           console.log('Autoplay bloqueado:', err);
         });
         
-        // Garante que continua sem som durante a reprodução
         video.addEventListener('play', () => {
           video.muted = true;
           video.volume = 0;
@@ -46,7 +41,6 @@ export class DefaultLoginLayout implements AfterViewInit {
       });
     }, 100);
 
-    // Inicializa particles.js
     setTimeout(() => {
       this.initParticles();
     }, 500);

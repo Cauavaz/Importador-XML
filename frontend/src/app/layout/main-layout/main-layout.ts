@@ -52,8 +52,6 @@ export class MainLayoutComponent implements OnDestroy {
   }
 
   onNavItemClick(route: string) {
-    // Navigation will trigger refresh via NavigationEnd event
-    // No need to manually trigger here to avoid duplicate refreshes
   }
 
 
