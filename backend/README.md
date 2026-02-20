@@ -7,6 +7,7 @@
 - **JWT** - Autenticação
 - **TypeScript** - Linguagem
 - **SQLite** - Banco de dados
+- **Swagger** - Documentação da API
 
 ## 📦 Instalação
 
@@ -43,10 +44,17 @@ npm run build
 npm start
 ```
 
+## 📚 Documentação da API (Swagger)
 
+Após iniciar o servidor, a documentação interativa da API estará disponível em:
 
+**🔗 http://localhost:3000/api**
 
-```
+O Swagger UI permite:
+- Visualizar todos os endpoints disponíveis
+- Testar as requisições diretamente pela interface
+- Ver exemplos de request/response
+- Autenticar com JWT Bearer token
 
 ## 📊 Estrutura do Banco
 
@@ -158,6 +166,4 @@ prisma/
 3. Iniciar servidor: `npm run start:dev`
 4. Acessar: `http://localhost:3000`
 
-## 📝 Licença
 
-MIT
