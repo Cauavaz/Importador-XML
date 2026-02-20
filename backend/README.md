@@ -100,8 +100,15 @@ O Swagger UI permite:
 
 ```
 PORT=3000
-SECRET_KEY=ca7d10e9f937ce3ac4f57a7158db675682150f3f
+SECRET_KEY=your-secret-key-here
+DATABASE_URL="file:./prisma/dev.db"
+CLEAR_NFES_ON_BOOT=false
 ```
+
+- **PORT**: Porta onde o servidor irá rodar (padrão: 3000)
+- **SECRET_KEY**: Chave secreta para geração de tokens JWT
+- **DATABASE_URL**: URL de conexão com o banco de dados SQLite
+- **CLEAR_NFES_ON_BOOT**: Se true, limpa todas as NF-es ao iniciar o servidor (padrão: false)
 
 ## 📁 Estrutura de Pastas
 
@@ -111,12 +118,21 @@ src/
 │   ├── auth.controller.ts
 │   ├── auth.service.ts
 │   ├── auth.module.ts
+│   ├── guards/
+│   │   └── jwt-auth.guard.ts
 │   └── strategies/
 │       └── jwt.strategy.ts
 ├── users/             # Módulo de usuários
 │   ├── users.controller.ts
 │   ├── users.service.ts
 │   └── users.module.ts
+├── nfe/               # Módulo de NF-e
+│   ├── nfe.controller.ts
+│   ├── nfe.service.ts
+│   └── nfe.module.ts
+├── database/          # Módulo de banco de dados
+│   ├── database.service.ts
+│   └── database.module.ts
 ├── prisma/            # Módulo do Prisma
 │   ├── prisma.service.ts
 │   └── prisma.module.ts
@@ -125,10 +141,32 @@ src/
 
 prisma/
 ├── schema.prisma      # Schema do banco
-└── migrations/        # Migrações
+├── migrations/        # Migrações
+└── dev.db             # Banco de dados SQLite
 ```
 
-## 📤 Endpoints de NF-e
+## 📤 Endpoints da API
+
+### Autenticação
+
+#### Login
+**POST** `/auth/login`
+- Body: `{ "username": "string", "password": "string" }`
+- Response: `{ "access_token": "string", "user": {...} }`
+
+#### Registrar
+**POST** `/auth/register`
+- Body: `{ "username": "string", "password": "string", "role": "user" }`
+- Response: `{ "access_token": "string", "user": {...} }`
+
+### Usuários
+
+#### Criar Usuário
+**POST** `/users/register`
+- Body: `{ "username": "string", "password": "string", "role": "user" }`
+- Response: `{ "message": "string", "userId": number }`
+
+### NF-e
 
 ### Upload de XML
 **POST** `/nfe/upload`
@@ -150,20 +188,29 @@ prisma/
 
 ## ✅ Funcionalidades Implementadas
 
-- ✅ Autenticação JWT
+- ✅ Autenticação JWT com Passport
+- ✅ Registro e login de usuários
+- ✅ Hash de senhas com bcrypt
 - ✅ Upload de arquivos XML
-- ✅ Parser de XML NF-e
+- ✅ Parser de XML NF-e (xml2js)
 - ✅ Importação de NF-e com múltiplos itens
-- ✅ Detecção de duplicidade
+- ✅ Detecção de duplicidade por chave NF-e
 - ✅ Listagem com paginação
-- ✅ Detalhes da NF-e com itens
+- ✅ Detalhes da NF-e com itens relacionados
 - ✅ Queries otimizadas (better-sqlite3)
+- ✅ Documentação Swagger completa
+- ✅ CORS configurado para frontend Angular
+- ✅ Validação de dados com class-validator
 
 ## 🎯 Como Usar
 
 1. Instalar dependências: `npm install`
-2. Configurar banco: `npx prisma migrate dev`
-3. Iniciar servidor: `npm run start:dev`
-4. Acessar: `http://localhost:3000`
+2. Copiar arquivo de ambiente: `cp .env-example .env`
+3. Configurar variáveis no `.env`
+4. Gerar Prisma Client: `npm run prisma:generate`
+5. Criar banco de dados: `npm run prisma:migrate`
+6. Iniciar servidor: `npm run start:dev`
+7. Acessar API: `http://localhost:3000`
+8. Acessar Swagger: `http://localhost:3000/api`
 
 
