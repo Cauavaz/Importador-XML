@@ -194,10 +194,6 @@ DATABASE_URL="file:./database.sqlite"
 - **Causa:** Múltiplas conexões simultâneas ao SQLite
 - **Solução:** Feche outras conexões ou aguarde alguns segundos
 
-## 📝 Licença
-
-MIT
-
 ## 👨‍💻 Desenvolvedor
 
 Desenvolvido por Cauavaz
