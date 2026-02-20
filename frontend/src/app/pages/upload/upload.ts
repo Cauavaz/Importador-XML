@@ -1,4 +1,4 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ViewChild, ElementRef } from '@angular/core';
@@ -14,7 +14,7 @@ import { firstValueFrom } from 'rxjs';
   templateUrl: './upload.html',
   styleUrls: ['./upload.scss']
 })
-export class UploadComponent {
+export class UploadComponent implements AfterViewInit {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   uploading = false;
   uploadedFiles: any[] = [];
@@ -26,6 +26,87 @@ export class UploadComponent {
     private toastr: ToastrService,
     private cdr: ChangeDetectorRef
   ) { }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.initParticles();
+    }, 500);
+  }
+
+  private initParticles() {
+    const particlesJS = (window as any).particlesJS;
+    const particlesElement = document.getElementById('particles-header');
+    
+    if (!particlesJS || !particlesElement) {
+      return;
+    }
+    
+    particlesJS('particles-header', {
+      particles: {
+        number: {
+          value: 40,
+          density: {
+            enable: true,
+            value_area: 800
+          }
+        },
+        color: {
+          value: '#ffffff'
+        },
+        shape: {
+          type: 'circle',
+        },
+        opacity: {
+          value: 0.5,
+          random: false,
+        },
+        size: {
+          value: 3,
+          random: true,
+        },
+        line_linked: {
+          enable: true,
+          distance: 150,
+          color: '#ffffff',
+          opacity: 0.35,
+          width: 1
+        },
+        move: {
+          enable: true,
+          speed: 2,
+          direction: 'none',
+          random: false,
+          straight: false,
+          out_mode: 'out',
+          bounce: false,
+        }
+      },
+      interactivity: {
+        detect_on: 'canvas',
+        events: {
+          onhover: {
+            enable: true,
+            mode: 'grab'
+          },
+          onclick: {
+            enable: true,
+            mode: 'remove'
+          },
+          resize: true
+        },
+        modes: {
+          repulse: {
+            distance: 100,
+            duration: 0.4
+          },
+          push: {
+            particles_nb: 4
+          }
+        }
+      },
+      retina_detect: true
+    });
+  }
   
   onDragOver(event: DragEvent) {
     event.preventDefault();

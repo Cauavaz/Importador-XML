@@ -13,12 +13,25 @@
   padding: 30px;
   background: #58079c;
   color: white;
+  position: relative;
+  overflow: hidden;
+  
+  .particles-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
   
   .header-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 20px;
+    position: relative;
+    z-index: 2;
   }
   
   .header-text {
