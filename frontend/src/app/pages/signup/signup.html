@@ -1,14 +1,14 @@
 <app-default-login-layout
     [title]="'Login into your account'"
-    [primaryBtnText]="'Singup Now'"
+    [primaryBtnText]="'Signup Now'"
     [secondaryBtnText]="'Login Now'"
     (submit)="submit()"
     (navigate)="navigate()"
-    [disablePrimaryBtn]="!singupForm.valid"
+    [disablePrimaryBtn]="!signupForm.valid"
 >
 
 
-    <form [formGroup]="singupForm">
+    <form [formGroup]="signupForm">
  <app-primary-input 
         formControlName="name"
         inputName="name" 
