@@ -43,25 +43,9 @@ npm run build
 npm start
 ```
 
-## 🔑 Endpoints da API
 
-### Autenticação
 
-**POST** `/auth/login`
-```json
-{
-  "username": "cauavaz1@gmail.com",
-  "password": "12345678"
-}
-```
 
-**POST** `/auth/register`
-```json
-{
-  "username": "usuario@email.com",
-  "password": "senha123",
-  "role": "user"
-}
 ```
 
 ## 📊 Estrutura do Banco
